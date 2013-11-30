@@ -45,13 +45,16 @@ object Dependencies {
         val prefix = s"com.fasterxml.$name"
         val core = s"$prefix.core"
         val module = s"$prefix.module"
+        val datatype = s"$prefix.datatype"
       }
       val module = s"$name-module"
+      val datatype = s"$name-datatype"
     }
     import constants._
     val Seq(core, databind) = Seq("core", "databind").map(a => group.core % s"$name-$a" % version)
     val Seq(afterburner) = Seq("afterburner").map(a => group.module % s"$module-$a" % version)
     val scala = group.module %% s"$module-scala" % version
+    val Seq(json_org) = Seq("json-org").map(a => group.datatype % s"$datatype-$a" % version)
   }
   object libraries {
     object constants {
@@ -59,7 +62,7 @@ object Dependencies {
     }
     import constants._
     private[this] def d = Dependencies
-    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, slf4j, logback % test)
+    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, jackson.json_org, slf4j, logback % test)
     val dispatch = core ++ Seq(d.dispatch.core)
     val play = core ++ Seq(d.play.json)
     val json4s = core ++ Seq(d.json4s.core)
