@@ -54,7 +54,7 @@ object Dependencies {
     val Seq(core, databind) = Seq("core", "databind").map(a => group.core % s"$name-$a" % version)
     val Seq(afterburner) = Seq("afterburner").map(a => group.module % s"$module-$a" % version)
     val scala = group.module %% s"$module-scala" % version
-    val Seq(json_org, jsr353) = Seq("json-org", "jsr353").map(a => group.datatype % s"$datatype-$a" % version)
+    val Seq(jsr353) = Seq("jsr353").map(a => group.datatype % s"$datatype-$a" % version)
   }
   val jsr353provider = "org.glassfish" % "javax.json" % "1.0.4"
   object libraries {
@@ -63,7 +63,7 @@ object Dependencies {
     }
     import constants._
     private[this] def d = Dependencies
-    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, jackson.json_org, jackson.jsr353, slf4j, jsr353provider, logback % test)
+    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, jackson.jsr353, slf4j, jsr353provider, logback % test)
     val dispatch = core ++ Seq(d.dispatch.core)
     val play = core ++ Seq(d.play.json)
     val json4s = core ++ Seq(d.json4s.core)
