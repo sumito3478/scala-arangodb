@@ -8,4 +8,6 @@ package object json {
   case class JsonString(value: String) extends JsonValue
   case class JsonArray(value: Seq[JsonValue]) extends JsonValue
   case class JsonObject(value: Map[String, JsonValue]) extends JsonValue
+  case object JsonNull extends JsonValue
+  case object JsonNothing extends JsonValue
 }
