@@ -1,21 +1,11 @@
 package info.sumito3478.arangodb
 
-import com.fasterxml.jackson
-import jackson.databind._
-import jackson.module.scala._
-import jackson.module.scala.experimental._
-import jackson.datatype.jsr353._
-import javax.json._
-
 package object json {
-  private[this] val mapper = new ObjectMapper with ScalaObjectMapper
-  mapper.registerModules(DefaultScalaModule, new JSR353Module)
-  private[this] val prettyPrinter = mapper.writerWithDefaultPrettyPrinter
-
-  def parse(x: String) = mapper.readValue[JsonValue](x)
-
-  implicit class JsonValueW(val self: JsonValue) {
-    def as[A: Manifest] = mapper.convertValue[A](self)
-    def pretty = prettyPrinter.writeValueAsString(self)
-  }
+  // simple and ad hoc Json tree. Not intended for general use.
+  sealed trait JsonValue
+  case class JsonBoolean(value: Boolean) extends JsonValue
+  case class JsonNumber(value: BigDecimal) extends JsonValue
+  case class JsonString(value: String) extends JsonValue
+  case class JsonArray(value: Seq[JsonValue]) extends JsonValue
+  case class JsonObject(value: Map[String, JsonValue]) extends JsonValue
 }
