@@ -63,7 +63,7 @@ object Dependencies {
     }
     import constants._
     private[this] def d = Dependencies
-    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, jackson.jsr353, slf4j, jsr353provider, logback % test)
+    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, slf4j, logback % test)
     val dispatch = core ++ Seq(d.dispatch.core)
     val play = core ++ Seq(d.play.json)
     val json4s = core ++ Seq(d.json4s.core)
