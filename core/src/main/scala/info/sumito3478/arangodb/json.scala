@@ -36,7 +36,6 @@ package object json {
     import jackson.databind.deser.std._
     import jackson.databind.`type`._
     import jackson.databind.module._
-    import scala.collection._
 
     private[this] object JValueSerializer extends StdSerializer[JValue](classOf[JValue]) {
       override def serialize(value: JValue, gen: JsonGenerator, provider: SerializerProvider): Unit = {
@@ -99,25 +98,23 @@ package object json {
         import JsonToken._
         p.getCurrentToken match {
           case START_OBJECT =>
-            // use a mutable buffer to efficiently deserialize large objects...
-            def loop(xs: mutable.UnrolledBuffer[(String, JValue)]): JObject =
+            def loop(xs: List[(String, JValue)]): JObject =
               p.nextToken match {
-                case END_OBJECT => JObject(xs.toMap)
+                case END_OBJECT => JObject(xs.reverse.toMap)
                 case _ =>
                   val name = p.getCurrentName
                   p.nextToken
                   val value = deserialize(p, ctx)
-                  loop(xs += ((name, value)))
+                  loop((name, value) :: xs)
               }
-            loop(mutable.UnrolledBuffer.empty[(String, JValue)])
+            loop(List())
           case START_ARRAY =>
-            // use a mutable buffer to efficiently deserialize large arrays...
-            def loop(xs: mutable.UnrolledBuffer[JValue]): JArray =
+            def loop(xs: List[JValue]): JArray =
               p.nextToken match {
-                case END_ARRAY => JArray(xs.toVector)
-                case _ => loop(xs += deserialize(p, ctx))
+                case END_ARRAY => JArray(xs.reverse)
+                case _ => loop(deserialize(p, ctx) :: xs)
               }
-            loop(mutable.UnrolledBuffer.empty[JValue])
+            loop(List())
           case VALUE_EMBEDDED_OBJECT => throw ctx.mappingException(classOf[JValue])
           case VALUE_FALSE => JBoolean(false)
           case VALUE_TRUE => JBoolean(true)
