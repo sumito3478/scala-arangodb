@@ -1,6 +1,7 @@
 package info.sumito3478
 
 package object arangodb {
+  import java.util.concurrent.atomic._
   private[arangodb] case class Logger(name: String) {
     private[this] val underlying = org.slf4j.LoggerFactory.getLogger(name)
 
@@ -17,5 +18,21 @@ package object arangodb {
   }
   private[arangodb] trait Logging {
     lazy val logger = Logger(getClass.getName)
+  }
+  trait Disposable extends Logging {
+    def disposeInternal: Unit
+
+    private[this] val disposed = new AtomicBoolean(false)
+
+    def dispose = if (disposed.compareAndSet(false, true)) disposeInternal
+
+    override def finalize =
+      if (!disposed.get) {
+        logger.warn(s"$this - calling dispose from finalizer!")
+        dispose
+      }
+  }
+  object Disposable extends Logging {
+    def using[A, B](x: A)(f: A => B)(implicit ev: A => Disposable) = try f(x) finally x.dispose
   }
 }
