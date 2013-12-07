@@ -9,7 +9,7 @@ object Build extends Build {
     javaOptions := Seq("-Xms1024m"),
     organization := "info.sumito3478",
     scalaVersion := "2.10.3",
-    crossScalaVersions := Seq("2.10.3", "2.9.3"),
+    crossScalaVersions := Seq("2.10.3"),
     fork := true,
     scalacOptions ++= Seq(
       "-encoding", "utf-8",
