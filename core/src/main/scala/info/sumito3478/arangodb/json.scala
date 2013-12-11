@@ -159,7 +159,7 @@ package object json {
       Jackson.mapper.writeValueAsString(x)
     }
   def read[A: Manifest](x: String) = Jackson.mapper.readValue[A](x)
-  def convert[A: Manifest](x: Any, precision: NumericPrecisionOption = Ignored): A =
+  def convert[A: Manifest](x: Any, precision: NumericPrecisionOption = Ignored) =
     precisionOption.withValue(precision) {
       Jackson.mapper.convertValue[A](x)
     }
