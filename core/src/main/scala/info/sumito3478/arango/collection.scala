@@ -5,6 +5,8 @@ package object collection {
   import doc._
   import scala.concurrent._
   case class Document(_id: String, _rev: String, _key: String)
+  case class EnsuringIndex(`type`: String, unique: Boolean, fields: Seq[String])
+  case class EnsuringIndexResult(isNewlyCreated: Boolean, id: String, fields: List[String], `type`: String, unique: Boolean)
   case class Collection(name: String, parent: DatabaseLike) {
     def _connection = parent._connection
     def _api: String = _connection._api
@@ -16,5 +18,7 @@ package object collection {
     def save[A](doc: A, createCollection: Boolean = false, waitForSync: Boolean = false)(implicit manifest: Manifest[A], ec: ExecutionContext): Future[ArangoResult[Document]] =
       _dispatcher[Document].POST.copy(body = Some(json.write(doc))) / s"document" <<? Seq("collection" -> name, "createCollection" -> createCollection, "waitForSync" -> waitForSync) dispatch ()
     def replace[A](id: String, doc: A, overwirte: Boolean = false, waitForSync: Boolean = false)(implicit manifest: Manifest[A], ec: ExecutionContext) = ???
+    def ensureHashIndex(fields: String*)(implicit ec: ExecutionContext) =
+      _dispatcher[EnsuringIndexResult].POST.copy[EnsuringIndexResult](body = Some(json.write(EnsuringIndex(`type` = "hash", unique = false, fields = fields)))) / s"index" <<? Seq("collection" -> name) dispatch ()
   }
 }
