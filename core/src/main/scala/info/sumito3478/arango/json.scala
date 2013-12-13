@@ -153,6 +153,7 @@ package object json {
     private[json] val mapper = new ObjectMapper with ScalaObjectMapper
     mapper.registerModule(DefaultScalaModule)
     mapper.registerModule(Module)
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
   }
   def write[A: Manifest](x: A, precision: NumericPrecisionOption = Checked) =
     precisionOption.withValue(precision) {

@@ -8,7 +8,6 @@ package object db {
   import com.ning.http.client._
 
   case class DatabaseInfo(name: String, id: String, path: String, isSystem: Boolean)
-  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
   private[this] case class DatabaseInfoResponse(result: DatabaseInfo)
 
   case class User(username: String, passwd: Option[String], active: Boolean, extra: json.JObject)

@@ -4,7 +4,6 @@ package object collection {
   import db._
   import doc._
   import scala.concurrent._
-  @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
   case class Document(_id: String, _rev: String, _key: String)
   case class Collection(name: String, parent: DatabaseLike) {
     def _connection = parent._connection
