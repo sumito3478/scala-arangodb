@@ -6,6 +6,7 @@ import com.typesafe.sbt.SbtScalariform
 
 object Build extends Build {
   lazy val commonSettings = Seq(
+    version := "0.0.1-SNAPSHOT",
     javaOptions := Seq("-Xms1024m"),
     organization := "info.sumito3478",
     scalaVersion := "2.10.3",
