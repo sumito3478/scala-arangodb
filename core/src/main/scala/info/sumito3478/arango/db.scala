@@ -1,4 +1,4 @@
-package info.sumito3478.arangodb
+package info.sumito3478.arango
 
 package object db {
   import connection._
@@ -17,9 +17,9 @@ package object db {
 
   sealed trait DatabaseLike extends Dynamic {
     self =>
-    protected[arangodb] val _connection: Connection
+    protected[arango] val _connection: Connection
     protected[this] def _api: String
-    private[arangodb] def _dispatcher[A: Manifest] = _connection.Dispatcher[A](url = _api)
+    private[arango] def _dispatcher[A: Manifest] = _connection.Dispatcher[A](url = _api)
     def selectDynamic(name: String): Collection = Collection(name, this)
     /**
      * Retrieves information about the current database

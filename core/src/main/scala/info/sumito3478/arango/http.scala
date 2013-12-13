@@ -1,4 +1,4 @@
-package info.sumito3478.arangodb
+package info.sumito3478.arango
 
 import com.ning.http.client.providers.netty.NettyAsyncHttpProviderConfig
 
@@ -8,7 +8,7 @@ package object http {
   import org.jboss.netty.util._
   import org.jboss.netty.channel.socket.nio._
 
-  val defaultUserAgent = "Mozilla/5.0 (compatible; scala-arangodb/1.4; +https://github.com/sumito3478/)"
+  val defaultUserAgent = "Mozilla/5.0 (compatible; scala-arango/1.4; +https://github.com/sumito3478/)"
   trait Executor {
     def client: AsyncHttpClient
 

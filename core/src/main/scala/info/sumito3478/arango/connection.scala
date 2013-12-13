@@ -1,4 +1,4 @@
-package info.sumito3478.arangodb
+package info.sumito3478.arango
 
 package object connection {
   import db._
@@ -8,24 +8,24 @@ package object connection {
   import scala.concurrent._
   import scala.util.control.Exception._
 
-  private[arangodb] case class Names(result: Seq[String])
+  private[arango] case class Names(result: Seq[String])
 
   case class Connection(executor: Executor, host: String = "127.0.0.1", port: Int = 8529, ssl: Boolean = false, user: Option[String] = None, password: Option[String] = None) {
     def db = DefaultDatabase(this)
     def _system = SystemDatabase(this)
     def apply(name: String) = Database(name, this)
-    private[arangodb] def _baseUrl = {
+    private[arango] def _baseUrl = {
       val scheme = if (ssl) "https" else "http"
       s"$scheme://$host:$port"
     }
-    private[arangodb] def _api = s"${_baseUrl}/_api"
+    private[arango] def _api = s"${_baseUrl}/_api"
     /**
      * Retrieves the list of all databases the current user can access without specifying a different username or password
      */
     def _user(implicit ec: ExecutionContext): Future[ArangoResult[Seq[String]]] =
       for (names <- Dispatcher[Names]().GET / "database/user" dispatch ())
         yield names.copy(result = names.result.result)
-    private[arangodb] case class Dispatcher[A](url: String = _api, method: String = "GET", body: Option[String] = None, headers: Map[String, String] = Map(), queries: Map[String, String] = Map()) {
+    private[arango] case class Dispatcher[A](url: String = _api, method: String = "GET", body: Option[String] = None, headers: Map[String, String] = Map(), queries: Map[String, String] = Map()) {
       private[this] def dispatchRaw[A](f: Response => A)(implicit manifest: Manifest[A], ec: ExecutionContext): Future[A] = {
         val req = new RequestBuilder().setUrl(url).setMethod(method)
         for (body <- body)
@@ -71,4 +71,5 @@ package object connection {
       def <<?(params: Traversable[(String, Any)]) = copy[A](queries = queries ++ params.map { case (k, v) => k -> v.toString })
       def /(segment: String) = copy[A](url = s"$url/$segment")
     }
+  }
 }

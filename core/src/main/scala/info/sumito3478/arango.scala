@@ -1,7 +1,7 @@
 package info.sumito3478
 
-package object arangodb {
-  private[arangodb] case class Logger(name: String) {
+package object arango {
+  private[arango] case class Logger(name: String) {
     private[this] val underlying = org.slf4j.LoggerFactory.getLogger(name)
 
     def error(msg: => String) = if (underlying.isErrorEnabled) underlying.error(msg)
@@ -15,7 +15,7 @@ package object arangodb {
     def trace(msg: => String) = if (underlying.isTraceEnabled) underlying.trace(msg)
     def trace(msg: => String, e: Throwable) = if (underlying.isTraceEnabled) underlying.trace(msg, e)
   }
-  private[arangodb] trait Logging {
+  private[arango] trait Logging {
     lazy val logger = Logger(getClass.getName)
   }
   import java.util.concurrent.atomic._

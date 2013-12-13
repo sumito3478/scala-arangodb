@@ -1,4 +1,4 @@
-package info.sumito3478.arangodb
+package info.sumito3478.arango
 
 package object json {
   // simple and ad hoc Json tree. Not intended for general use.
