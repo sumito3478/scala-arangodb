@@ -1,6 +1,12 @@
 package info.sumito3478
 
 package object arango {
+  import scalaz._, Scalaz._
+  import argonaut._, Argonaut._
+  import macros._
+
+  type DecodeJson[A] = argonaut.DecodeJson[A]
+
   private[arango] case class Logger(name: String) {
     private[this] val underlying = org.slf4j.LoggerFactory.getLogger(name)
 
@@ -38,9 +44,17 @@ package object arango {
 
   case class ArangoErrorResponse(error: Boolean, code: Int, errorNum: Int, errorMessage: String)
 
-  case class ArangoException(error: Option[ArangoErrorResponse], response: json.JObject) extends Exception(error.map(_.errorMessage).getOrElse(json.write(response, json.NumericPrecisionOption.Ignored)))
+  implicit def ArangoErrorResponseCodecJson = casecodec[ArangoErrorResponse]
 
-  case class ArangoResult[A](result: A, raw: json.JObject, etag: Option[String]) {
-    override def toString = json.write(raw, json.NumericPrecisionOption.Ignored)
+  sealed trait ArangoThrowable {
+    self: Throwable =>
+  }
+
+  case class ArangoException(error: DecodeResult[ArangoErrorResponse], response: Json) extends Exception(error.map(_.errorMessage).getOr(response.spaces2)) with ArangoThrowable
+
+  case class ArangoDriverException(message: String, cause: Option[Throwable] = None) extends Exception(message, cause.orNull) with ArangoThrowable
+
+  case class ArangoResult[A](result: A, raw: Json, etag: Option[String]) {
+    override def toString = raw.spaces2
   }
 }

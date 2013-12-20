@@ -29,7 +29,12 @@ object Build extends Build {
     def arangodb(libs: Seq[ModuleID]) = self.configure(project => project.copy(id = s"scala-arangodb-${project.id}").settings(commonSettings: _*).settings(libraryDependencies ++= libs))
   }
 
-  lazy val core = project.arangodb(libraries.core)
+  lazy val macros = project.arangodb(libraries.core) settings(
+    resolvers += Resolver.sonatypeRepo("releases"),
+    libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.0.0-M1" cross CrossVersion.full))
+
+  lazy val core = project.arangodb(libraries.core).dependsOn(macros)
 
   lazy val dispatch = project.arangodb(libraries.dispatch).dependsOn(core)
 
@@ -37,5 +42,5 @@ object Build extends Build {
 
   lazy val json4s = project.arangodb(libraries.json4s).dependsOn(core)
 
-  lazy val root = project.in(file(".")).arangodb(Seq()).configure(p => p.copy(id = "scala-arangodb")).aggregate(core, dispatch, play, json4s).settings(publishArtifact := false)
+  lazy val root = project.in(file(".")).arangodb(Seq()).configure(p => p.copy(id = "scala-arangodb")).aggregate(macros, core, dispatch, play, json4s).settings(publishArtifact := false)
 }

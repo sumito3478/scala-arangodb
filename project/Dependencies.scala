@@ -10,6 +10,10 @@ object Dependencies {
 
   val slf4j = "org.slf4j" % "slf4j-api" % "1.7.5"
 
+  val scalaz = "org.scalaz" %% "scalaz-core" % "7.0.5"
+
+  val argonaut = "io.argonaut" %% "argonaut" % "6.0.1"
+
   object json4s {
     object constants {
       val version = "3.2.5"
@@ -63,7 +67,7 @@ object Dependencies {
     }
     import constants._
     private[this] def d = Dependencies
-    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, slf4j, logback % test)
+    val core = Seq(async_http_client, jackson.core, jackson.databind, jackson.afterburner, jackson.scala, slf4j, scalaz, argonaut, logback % test)
     val dispatch = core ++ Seq(d.dispatch.core)
     val play = core ++ Seq(d.play.json)
     val json4s = core ++ Seq(d.json4s.core)

@@ -6,19 +6,26 @@ package object db {
   import scala.concurrent._
   import scala.language.dynamics
   import com.ning.http.client._
+  import scalaz._, Scalaz._
+  import argonaut._, Argonaut._
+  import macros._
 
   case class DatabaseInfo(name: String, id: String, path: String, isSystem: Boolean)
-  private[this] case class DatabaseInfoResponse(result: DatabaseInfo)
+  implicit def DatabaseInfoCodecJson = casecodec[DatabaseInfo]
+  private[arango] case class DatabaseInfoResponse(result: DatabaseInfo)
+  private[arango] implicit def DatabaseInfoResponseCodecJson = casecodec[DatabaseInfoResponse]
 
-  case class User(username: String, passwd: Option[String], active: Boolean, extra: json.JObject)
+  case class User(username: String, passwd: Option[String], active: Boolean, extra: Json)
+  implicit def UserCodecJson = casecodec[User]
 
-  private[this] case class DatabaseCreation(name: String, users: Seq[User])
+  private[this] case class DatabaseCreation(name: String, users: List[User])
+  private[this] implicit def DatabaseCreationCodecJson = casecodec[DatabaseCreation]
 
   sealed trait DatabaseLike extends Dynamic {
     self =>
     protected[arango] val _connection: Connection
     protected[this] def _api: String
-    private[arango] def _dispatcher[A: Manifest] = _connection.Dispatcher[A](url = _api)
+    private[arango] def _dispatcher[A] = _connection.Dispatcher[A](url = _api)
     def selectDynamic(name: String): Collection = Collection(name, this)
     /**
      * Retrieves information about the current database
@@ -57,14 +64,12 @@ package object db {
      * Creates a new database
      */
     def _createDatabase(name: String, users: Seq[User])(implicit ec: ExecutionContext): Future[ArangoResult[Unit]] =
-      for (result <- _dispatcher[json.JObject].POST / "database" dispatch ())
-        yield result.copy(result = ())
+      _dispatcher[Unit].POST / "database" dispatchUnit ()
     /**
      * Deletes the database along with all data stored in it
      */
     def _deleteDatabase(name: String)(implicit ec: ExecutionContext): Future[ArangoResult[Unit]] =
-      for (result <- _dispatcher[json.JObject].DELETE / s"database/$name" dispatch ())
-        yield result.copy(result = ())
+      _dispatcher[Unit].DELETE / s"database/$name" dispatchUnit ()
   }
   trait CollectionSelector {
     def selectDynamic(name: String): Collection
